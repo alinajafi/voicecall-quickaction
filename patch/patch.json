@@ -1,0 +1,8 @@
+{
+    "name": "Voice call quick action",
+    "description": "Adds a quick action to call a specific number",
+    "category": "others",
+    "infos": {
+        "maintainer": "AliNa"
+    }
+}
