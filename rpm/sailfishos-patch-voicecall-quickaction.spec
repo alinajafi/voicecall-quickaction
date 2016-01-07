@@ -37,12 +37,12 @@ mkdir -p %{buildroot}/usr/share/jolla-settings/entries
 cp -r settings/* %{buildroot}/usr/share/jolla-settings/entries
 
 %pre
-if [ -d /var/lib/patchmanager/alina/patches/%{name} ]; then
+if [ -d /var/lib/patchmanager/ausmt/patches/%{name} ]; then
 /usr/sbin/patchmanager -u %{name} || true
 fi
 
 %preun
-if [ -d /var/lib/patchmanager/alina/patches/%{name} ]; then
+if [ -d /var/lib/patchmanager/ausmt/patches/%{name} ]; then
 /usr/sbin/patchmanager -u %{name} || true
 fi
 
