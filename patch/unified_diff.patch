@@ -1,0 +1,143 @@
+diff -Nru jolla/usr/share/jolla-settings/pages/events/QuickActionsSelectionPage.qml alina/usr/share/jolla-settings/pages/events/QuickActionsSelectionPage.qml
+--- jolla/usr/share/jolla-settings/pages/events/QuickActionsSelectionPage.qml	2015-12-07 09:48:00.014436208 +0330
++++ alina/usr/share/jolla-settings/pages/events/QuickActionsSelectionPage.qml	2015-12-21 06:53:08.761722715 +0330
+@@ -1,40 +1,85 @@
+ import QtQuick 2.0
+ import Sailfish.Silica 1.0
++import org.nemomobile.configuration 1.0
+ 
+ Page {
+     id: page
+ 
+     property alias model: listView.model
+ 
+-    SilicaListView {
+-        id: listView
+-
++    SilicaFlickable {
+         anchors.fill: parent
++        contentHeight: column.height
+ 
+-        header: PageHeader {
+-            //% "Select actions"
+-            title: qsTrId("settings_events-he-select_actions")
+-        }
++        VerticalScrollDecorator {}
+ 
+-        delegate: IconTextSwitch {
+-            id: item
++        Column {
++            id: column
+             width: parent.width
+-            text: model.title
+-            icon.source: {
+-                if (model.icon && model.icon.indexOf("://") < 0) {
+-                    return "image://theme/" + model.icon
++
++            PageHeader {
++                //% "Select actions"
++                title: qsTrId("settings_events-he-select_actions")
++            }
++
++            Item {
++                width: parent.width
++                height: listView.contentHeight
++                ListView {
++                    id: listView
++                    width: parent.width
++                    height: Screen.height * 1000
++                    interactive: false
++
++                    delegate: IconTextSwitch {
++                        id: item
++                        width: parent.width
++                        text: model.title
++                        icon.source: {
++                            if (model.icon && model.icon.indexOf("://") < 0) {
++                                return "image://theme/" + model.icon
++                            }
++                            return model.icon
++                        }
++                        checked: model.enabled
++                        automaticCheck: false
++                        onClicked: {
++                            if (model.enabled) {
++                                page.model.disableAction(model.path)
++                            } else {
++                                page.model.enableAction(model.path)
++                            }
++                        }
++                    }
+                 }
+-                return model.icon
+             }
+-            checked: model.enabled
+-            automaticCheck: false
+-            onClicked: {
+-                if (model.enabled) {
+-                    page.model.disableAction(model.path)
+-                } else {
+-                    page.model.enableAction(model.path)
++
++            SectionHeader {
++                //% Favorite call settings
++                text: qsTrId("sailfishos-patch-voicecall-quickaction-la-settings")
++            }
++
++            TextField {
++                width: parent.width
++
++                //% Enter a phone number
++                placeholderText: qsTrId("sailfishos-patch-voicecall-quickaction-la-enter_number")
++                //% Favorite number
++                label: qsTrId("sailfishos-patch-voicecall-quickaction-la-number")
++                text: personOne.number
++                onTextChanged: personOne.number = text
++                EnterKey.iconSource: "image://theme/icon-m-enter-close"
++                EnterKey.onClicked: {
++                    root.focus = true
+                 }
++                inputMethodHints: Qt.ImhDialableCharactersOnly
+             }
+         }
+     }
++
++    ConfigurationGroup {
++        id: personOne
++        path: "/desktop/lipstick/quickactions/voicecall"
++        property string number: ""
++    }
+ }
+diff -Nru jolla/usr/share/voicecall-ui-jolla/main.qml alina/usr/share/voicecall-ui-jolla/main.qml
+--- jolla/usr/share/voicecall-ui-jolla/main.qml	2015-12-07 08:20:17.354290925 +0330
++++ alina/usr/share/voicecall-ui-jolla/main.qml	2015-12-07 08:32:10.946310625 +0330
+@@ -3,6 +3,7 @@
+ import org.nemomobile.dbus 1.0
+ import org.nemomobile.contacts 1.0
+ import org.nemomobile.notifications 1.0
++import org.nemomobile.configuration 1.0
+ import "common/CallLog.js" as CallLog
+ import "common"
+ import "pages"
+@@ -322,9 +323,21 @@
+                 telephony.dialNumberOrService(number)
+                 return true
+             }
++
++            signal openDialerNumber
++
++            onOpenDialerNumber: {
++                dial(personOne.number)
++            }
+         }
+     }
+ 
++    ConfigurationGroup {
++        id: personOne
++        path: "/desktop/lipstick/quickactions/voicecall"
++        property string number: ""
++    }
++
+     DBusAdaptor {
+         service: "com.jolla.settings.lteconfigs"
+         path: "/com/jolla/settings/lteconfigs"
