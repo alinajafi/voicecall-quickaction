@@ -1,0 +1,12 @@
+{
+    "translation_catalog": "sailfishos-patch-voicecall-quickaction",
+    "entries": [
+    {
+        "path": "system_settings/look_and_feel/events/QuickActionsSelectionPage",
+        "type": "custom",
+        "params": {
+            "source": "/usr/share/jolla-settings/pages/events/QuickActionsSelectionPage.qml"
+        }
+    }
+    ]
+}
